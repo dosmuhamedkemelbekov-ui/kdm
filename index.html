@@ -7,192 +7,145 @@
     <style>
         :root {
             --primary: #007AFF;
-            --bg: #F9F9F9;
+            --bg: #F2F2F7;
             --card-bg: #FFFFFF;
             --text-main: #1C1C1E;
             --text-secondary: #8E8E93;
             --border: #E5E5EA;
-            --shadow: 0 8px 24px rgba(0,0,0,0.04);
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
             --success: #34C759;
             --warning: #FF9500;
             --danger: #FF3B30;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: var(--bg); 
-            color: var(--text-main);
-            overflow-x: hidden;
-            -webkit-user-select: none;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text-main); line-height: 1.4; overflow-x: hidden; }
 
         #app { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 90px; }
         .container { padding: 16px; width: 100%; max-width: 500px; margin: 0 auto; }
-
-        /* Auth Screen */
-        .auth-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
-            overflow-y: auto; display: flex; flex-direction: column;
-        }
-        .auth-content { padding: 40px 24px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .auth-card { background: var(--card-bg); padding: 24px; border-radius: 24px; box-shadow: var(--shadow); }
         
-        /* Typography */
-        h1 { font-size: 24px; font-weight: 800; color: var(--primary); margin: 0 0 8px; text-align: center; }
-        h2 { font-size: 20px; font-weight: 700; margin: 0 0 16px; }
-        h3 { font-size: 17px; font-weight: 600; margin: 20px 0 12px; }
-
-        /* Forms */
+        /* Auth */
+        .auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; overflow-y: auto; padding: 40px 24px; }
+        .auth-card { background: var(--card-bg); padding: 24px; border-radius: 20px; box-shadow: var(--shadow); }
         .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; padding-left: 4px; }
-        input, select { 
-            width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border); 
-            font-size: 16px; outline: none; background: #fff; transition: border-color 0.2s;
-        }
-        input:focus { border-color: var(--primary); }
+        .input-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; margin-left: 4px; }
+        input, select, textarea { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 16px; outline: none; background: #fff; }
 
-        /* Buttons */
-        .btn { 
-            width: 100%; padding: 16px; border-radius: 16px; border: none; font-size: 16px; font-weight: 600; 
-            cursor: pointer; transition: all 0.2s; background: var(--primary); color: white;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); margin-top: 12px; }
-        .btn-small { padding: 8px 12px; font-size: 13px; width: auto; border-radius: 10px; }
+        /* UI Elements */
+        header { padding: 44px 16px 12px; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        header h1 { font-size: 18px; font-weight: 700; margin: 0; color: var(--primary); }
+        
+        .btn { width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { opacity: 0.7; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); margin-top: 10px; }
+        .btn-small { padding: 8px 12px; font-size: 12px; width: auto; border-radius: 10px; }
         .btn-danger { background: var(--danger); }
 
-        /* Header & Nav */
-        header { 
-            padding: 44px 16px 12px; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);
-            position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
-        }
-        nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; height: 84px; 
-            background: rgba(255,255,255,0.94); backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding-top: 8px; z-index: 1000;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-secondary); font-size: 10px; flex: 1; transition: 0.2s; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; height: 84px; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding-top: 8px; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-secondary); font-size: 10px; flex: 1; }
         .nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 24px; margin-bottom: 4px; }
 
-        /* Dashboard Components */
-        .card { background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); }
-        .energy-box { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-        .progress-container { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #5856D6); transition: width 0.5s; }
+        .card { background: var(--card-bg); border-radius: 18px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; overflow: hidden; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-right: 4px; }
+        .badge-primary { background: #E1F0FF; color: var(--primary); }
+        .badge-success { background: #E2F9E9; color: var(--success); }
+        .badge-gray { background: #F2F2F7; color: var(--text-secondary); }
+
+        .energy-bar-wrap { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; margin: 10px 0; }
+        .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #007AFF, #34C759); transition: width 0.6s ease; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-item { background: var(--card-bg); padding: 14px; border-radius: 16px; text-align: center; border: 1px solid var(--border); }
+        .stat-val { font-size: 18px; font-weight: 800; display: block; }
+        .stat-lab { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .list-item:last-child { border-bottom: none; }
         
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .stat-card { background: var(--card-bg); padding: 16px; border-radius: 18px; text-align: center; box-shadow: var(--shadow); }
-        .stat-val { font-size: 20px; font-weight: 800; display: block; }
-        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+        .sub-tab { padding: 8px 16px; border-radius: 20px; background: var(--border); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; color: var(--text-secondary); }
+        .sub-tab.active { background: var(--primary); color: white; }
 
-        /* Lists */
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-        .item-row:last-child { border-bottom: none; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-blue { background: #E1F0FF; color: var(--primary); }
-
-        /* Modals */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 3000; display: none; align-items: flex-end; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; display: none; align-items: flex-end; }
         .modal.active { display: flex; }
-        .modal-content { 
-            background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 24px; 
-            max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: 0.3s;
-        }
+        .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 24px; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .modal.active .modal-content { transform: translateY(0); }
 
-        #toast { 
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); 
-            background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 20px; 
-            font-size: 14px; z-index: 4000; display: none; white-space: nowrap;
-        }
-
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; z-index: 4000; display: none; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .hidden { display: none !important; }
+        
+        .title-badge { background: #FFD700; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; margin-left: 4px; }
     </style>
 </head>
 <body>
 
     <div id="toast"></div>
 
-    <!-- AUTH SCREEN -->
+    <!-- Auth Screen -->
     <div id="auth-screen" class="auth-screen">
-        <div class="auth-content">
-            <h1>Студенттік Құрылытай</h1>
-            <p style="text-align: center; color: var(--text-secondary); font-size: 14px; margin-bottom: 30px;">Система управления парламентом</p>
-            
+        <div class="container">
+            <h1 style="text-align: center; font-size: 28px; margin-bottom: 40px;">ҚҰРЫЛТАЙ</h1>
             <div id="login-box" class="auth-card">
-                <h2>Вход</h2>
-                <div class="input-group">
-                    <label>Никнейм или Группа</label>
-                    <input type="text" id="login-id" placeholder="Напр: Министр">
-                </div>
-                <div class="input-group">
-                    <label>Пароль</label>
-                    <input type="password" id="login-pass" placeholder="••••••">
-                </div>
+                <h2 style="margin: 0 0 20px;">Вход</h2>
+                <div class="input-group"><label>Никнейм или Группа</label><input type="text" id="login-id"></div>
+                <div class="input-group"><label>Пароль</label><input type="password" id="login-pass"></div>
                 <button class="btn" onclick="auth.login()">Войти</button>
-                <button class="btn btn-outline" onclick="auth.toggle(true)">Создать аккаунт</button>
+                <button class="btn btn-outline" onclick="auth.toggle(true)">Регистрация</button>
             </div>
-
             <div id="register-box" class="auth-card hidden">
-                <h2>Регистрация</h2>
-                <div class="input-group"><label>ФИО или Ник</label><input type="text" id="reg-name" placeholder="Арман Ибрагимов"></div>
-                <div class="input-group"><label>Группа</label><input type="text" id="reg-group" placeholder="БД 24-1"></div>
-                <div class="input-group">
-                    <label>Должность</label>
-                    <select id="reg-role">
+                <h2 style="margin: 0 0 20px;">Регистрация</h2>
+                <div class="input-group"><label>ФИО</label><input type="text" id="reg-name"></div>
+                <div class="input-group"><label>Группа</label><input type="text" id="reg-group"></div>
+                <div class="input-group"><label>Должность</label>
+                    <select id="reg-role-title">
                         <option value="Депутат">Депутат</option>
                         <option value="Министр">Министр</option>
                         <option value="Секретарь">Секретарь</option>
                         <option value="Председатель">Председатель</option>
                     </select>
                 </div>
-                <div class="input-group">
-                    <label>Отряд</label>
+                <div class="input-group"><label>Отряд</label>
                     <select id="reg-squad">
-                        <option value="A">Отряд A</option><option value="B">Отряд B</option>
-                        <option value="C">Отряд C</option><option value="D">Отряд D</option>
+                        <option value="A">Отряд A</option><option value="B">Отряд B</option><option value="C">Отряд C</option><option value="D">Отряд D</option>
                     </select>
                 </div>
-                <div class="input-group"><label>Пароль (мин. 6 симв.)</label><input type="password" id="reg-pass"></div>
-                <button class="btn" onclick="auth.register()">Зарегистрироваться</button>
-                <button class="btn btn-outline" onclick="auth.toggle(false)">Уже есть аккаунт</button>
+                <div class="input-group"><label>Пароль</label><input type="password" id="reg-pass"></div>
+                <button class="btn" onclick="auth.register()">Создать аккаунт</button>
+                <button class="btn btn-outline" onclick="auth.toggle(false)">Назад</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP -->
+    <!-- Main App -->
     <div id="app" class="hidden">
         <header>
-            <div style="font-weight: 800; font-size: 18px; color: var(--primary);">ҚҰРЫЛТАЙ</div>
+            <h1>ҚҰРЫЛТАЙ</h1>
             <div onclick="ui.showProfile()" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                 <span id="header-coins" style="font-weight: 700; color: var(--warning);">0 🪙</span>
-                <div id="header-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;"></div>
+                <div id="header-avatar" style="width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">?</div>
             </div>
         </header>
 
         <main class="container" id="view-content"></main>
 
         <nav>
-            <a href="javascript:void(0)" class="nav-item active" onclick="ui.nav('home', this)"><span class="nav-icon">🏠</span><span>Главная</span></a>
-            <a href="javascript:void(0)" class="nav-item" onclick="ui.nav('tasks', this)"><span class="nav-icon">🎯</span><span>Задачи</span></a>
-            <a href="javascript:void(0)" class="nav-item" onclick="ui.nav('rating', this)"><span class="nav-icon">🏆</span><span>Рейтинг</span></a>
-            <a href="javascript:void(0)" class="nav-item" onclick="ui.nav('store', this)"><span class="nav-icon">🛍️</span><span>Магазин</span></a>
-            <a href="javascript:void(0)" class="nav-item" onclick="ui.nav('links', this)"><span class="nav-icon">🤝</span><span>Связки</span></a>
-            <a href="javascript:void(0)" id="admin-tab" class="nav-item hidden" onclick="ui.nav('admin', this)"><span class="nav-icon">⚙️</span><span>Админ</span></a>
+            <a href="#" class="nav-item active" onclick="ui.navigate('home', this)"><span class="nav-icon">🏠</span><span>Главная</span></a>
+            <a href="#" class="nav-item" onclick="ui.navigate('tasks', this)"><span class="nav-icon">🎯</span><span>Задачи</span></a>
+            <a href="#" class="nav-item" onclick="ui.navigate('rating', this)"><span class="nav-icon">🏆</span><span>Рейтинг</span></a>
+            <a href="#" class="nav-item" onclick="ui.navigate('store', this)"><span class="nav-icon">🛍️</span><span>Магазин</span></a>
+            <a href="#" class="nav-item" onclick="ui.navigate('links', this)"><span class="nav-icon">🤝</span><span>Связки</span></a>
+            <a href="#" id="admin-nav" class="nav-item hidden" onclick="ui.navigate('admin', this)"><span class="nav-icon">⚙️</span><span>Админ</span></a>
         </nav>
     </div>
 
-    <!-- MODAL -->
+    <!-- Modal -->
     <div id="modal" class="modal" onclick="ui.closeModal(event)">
         <div class="modal-content" id="modal-inner"></div>
     </div>
 
     <script>
-        /** STATE & CONFIG **/
+        /** STATE **/
         const state = {
             users: [],
             participants: [],
@@ -200,356 +153,426 @@
             store: [],
             alliances: [],
             events: [],
-            energy: 75,
+            energy: 80,
             seasonWeek: 1,
+            history: [],
             googleUrl: 'https://script.google.com/macros/s/AKfycbw8dxgWRVSUBKW9YNFmu7qx7mIKqdxicyHH_43eAlkTrmZEdUdVvvrq0FMsaIppttg/exec',
             currentUser: null,
 
             save() {
-                localStorage.setItem('kurultai_db', JSON.stringify({
-                    users: this.users,
-                    participants: this.participants,
-                    tasks: this.tasks,
-                    store: this.store,
-                    alliances: this.alliances,
-                    events: this.events,
-                    energy: this.energy,
-                    seasonWeek: this.seasonWeek
+                localStorage.setItem('kurultai_pro_data', JSON.stringify({
+                    users: this.users, participants: this.participants, tasks: this.tasks,
+                    store: this.store, alliances: this.alliances, events: this.events,
+                    energy: this.energy, seasonWeek: this.seasonWeek, history: this.history
                 }));
             },
             load() {
-                const data = localStorage.getItem('kurultai_db');
-                if (data) Object.assign(this, JSON.parse(data));
-                else this.initDefault();
-                
-                const sess = localStorage.getItem('kurultai_session');
-                if (sess) this.currentUser = JSON.parse(sess);
+                const data = localStorage.getItem('kurultai_pro_data');
+                if (data) Object.assign(this, JSON.parse(data)); else this.seed();
+                const session = localStorage.getItem('kurultai_pro_session');
+                if (session) this.currentUser = JSON.parse(session);
             },
-            initDefault() {
-                const squads = ['A', 'B', 'C', 'D'];
-                const roles = ['Strategist', 'Builder', 'Speaker', 'Support'];
+            seed() {
+                const squads = ['A', 'B', 'C', 'D'], roles = ['Strategist', 'Builder', 'Speaker', 'Support'];
                 for(let i=1; i<=26; i++) {
                     this.participants.push({
-                        id: 'p' + i,
-                        name: 'Участник ' + i,
-                        nick: 'user' + i,
-                        gameRole: roles[i % 4],
-                        coins: 100, influence: 50, trust: 0,
-                        squad: squads[i % 4],
-                        monthlyLinks: [],
-                        weeklyStats: { p: 0, t: 0 },
-                        secretRole: null,
-                        titles: []
+                        id: 'p'+i, name: 'Участник '+i, gameRole: roles[i%4], coins: 100, influence: 50, trust: 0,
+                        squad: squads[i%4], monthlyLinks: [], weeklyStats: { personal: 0, team: 0 }, secretRole: null, titles: [], lastTrustGivenTo: null
                     });
                 }
                 this.tasks = [
-                    { id: 't1', title: 'Смешай отряды', desc: 'Команда из 3 человек разных отрядов', type: 'team', rC: 80, rI: 20, performers: [] },
-                    { id: 't2', title: 'Дисциплина', desc: 'Личная задача на пользу парламента', type: 'personal', rC: 30, rI: 5, performers: [] }
+                    { id: 't1', title: 'Смешай отряды', desc: 'Соберите команду из 3 человек из разных отрядов', type: 'team', rewardCoins: 80, rewardInfluence: 20, status: 'active', performers: [] },
+                    { id: 't2', title: 'Дисциплина', desc: 'Сделай 1 полезную задачу для парламента', type: 'personal', rewardCoins: 30, rewardInfluence: 5, status: 'active', performers: [] },
+                    { id: 't3', title: 'Энергия недели', desc: 'Закрыть 8 командных задач всем парламентом', type: 'parliament', rewardCoins: 0, rewardInfluence: 0, status: 'active', performers: [] }
                 ];
                 this.store = [
                     { id: 's1', name: 'Приоритет на поездку', price: 300, type: 'ind' },
-                    { id: 's2', name: 'Кофе митап парламента', price: 800, type: 'team' }
+                    { id: 's2', name: 'Бейдж Top Kurultai', price: 200, type: 'ind' },
+                    { id: 's3', name: 'Кофе митап парламента', price: 800, type: 'team' }
                 ];
+                this.assignSecretRoles();
                 this.save();
+            },
+            assignSecretRoles() {
+                const roles = ['Observer', 'Catalyst', 'Diplomat'];
+                const shuffled = [...this.participants].sort(() => 0.5 - Math.random());
+                roles.forEach((r, i) => shuffled[i].secretRole = r);
             }
         };
 
-        /** CRYPTO SIMULATION **/
-        async function hash(str) {
-            const msg = new TextEncoder().encode(str);
-            const buf = await crypto.subtle.digest('SHA-256', msg);
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        /** CRYPTO **/
+        async function hash(s) {
+            const m = new TextEncoder().encode(s), b = await crypto.subtle.digest('SHA-256', m);
+            return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
         }
 
-        /** AUTH MODULE **/
+        /** AUTH **/
         const auth = {
             async register() {
-                const name = document.getElementById('reg-name').value;
-                const group = document.getElementById('reg-group').value;
-                const role = document.getElementById('reg-role').value;
-                const squad = document.getElementById('reg-squad').value;
-                const pass = document.getElementById('reg-pass').value;
-
-                if (!name || pass.length < 6) return ui.toast('Заполните все поля правильно');
-
+                const name = document.getElementById('reg-name').value, group = document.getElementById('reg-group').value,
+                    roleT = document.getElementById('reg-role-title').value, squad = document.getElementById('reg-squad').value,
+                    pass = document.getElementById('reg-pass').value;
+                if (!name || pass.length < 6) return ui.toast('Заполните данные (пароль 6+)');
                 const hPass = await hash(pass);
-                const user = { id: 'u'+Date.now(), name, group, role, squad, pass: hPass };
-                
+                const user = { id: 'u'+Date.now(), name, group, roleTitle: roleT, squad, pass: hPass };
                 state.users.push(user);
-                // Привязываем к существующему участнику или создаем нового
-                let part = state.participants.find(p => p.name === name);
-                if (!part) {
-                    part = {
-                        id: user.id, name, nick: name, gameRole: 'Strategist', 
-                        coins: 100, influence: 20, trust: 0, squad, 
-                        monthlyLinks: [], weeklyStats: { p: 0, t: 0 }, titles: []
-                    };
-                    state.participants.push(part);
+                let p = state.participants.find(x => x.name === name);
+                if (!p) {
+                    p = { id: user.id, name, gameRole: 'Strategist', coins: 100, influence: 50, trust: 0, squad, monthlyLinks: [], weeklyStats: { personal: 0, team: 0 }, titles: [] };
+                    state.participants.push(p);
                 }
-                
-                state.save();
-                ui.toast('Регистрация успешна!');
-                this.toggle(false);
+                state.save(); ui.toast('Успех!'); this.toggle(false);
             },
-
             async login() {
-                const id = document.getElementById('login-id').value;
-                const pass = document.getElementById('login-pass').value;
-                const hPass = await hash(pass);
+                const id = document.getElementById('login-id').value, pass = document.getElementById('login-pass').value;
+                const h = await hash(pass);
+                const u = state.users.find(x => (x.name === id || x.group === id) && x.pass === h);
+                if (u) { state.currentUser = u; localStorage.setItem('kurultai_pro_session', JSON.stringify(u)); app.init(); }
+                else ui.toast('Ошибка входа');
+            },
+            toggle(r) { document.getElementById('login-box').classList.toggle('hidden', r); document.getElementById('register-box').classList.toggle('hidden', !r); }
+        };
 
-                const user = state.users.find(u => (u.name === id || u.group === id) && u.pass === hPass);
-                if (user) {
-                    state.currentUser = user;
-                    localStorage.setItem('kurultai_session', JSON.stringify(user));
-                    app.init();
-                } else {
-                    ui.toast('Неверные данные');
+        /** LOGIC **/
+        const logic = {
+            getParticipant() { return state.participants.find(p => p.name === state.currentUser.name); },
+            
+            calculateReward(task, performerIds) {
+                let coins = task.rewardCoins, influence = task.rewardInfluence;
+                if (task.type === 'team') {
+                    const n = performerIds.length;
+                    const mult = n >= 4 ? 2.0 : n === 3 ? 1.5 : n === 2 ? 1.2 : 1.0;
+                    coins *= mult; influence *= mult;
+                    const squads = new Set(performerIds.map(id => state.participants.find(p => p.id === id).squad));
+                    if (squads.size > 1) coins += 15;
+                    state.alliances.forEach(a => {
+                        if (squads.has(a.s1) && squads.has(a.s2)) { coins *= 1.3; influence *= 1.3; }
+                    });
                 }
+                if (state.energy > 70) { coins *= 1.1; influence *= 1.1; }
+                else if (state.energy < 30) { coins *= 0.9; influence *= 0.9; }
+                return { coins: Math.round(coins), influence: Math.round(influence) };
             },
 
-            toggle(isReg) {
-                document.getElementById('login-box').classList.toggle('hidden', isReg);
-                document.getElementById('register-box').classList.toggle('hidden', !isReg);
+            completeTask(taskId, performerIds) {
+                const task = state.tasks.find(t => t.id === taskId);
+                const reward = this.calculateReward(task, performerIds);
+                performerIds.forEach(id => {
+                    const p = state.participants.find(x => x.id === id);
+                    p.coins += reward.coins; p.influence += reward.influence;
+                    if (task.type === 'team') {
+                        p.weeklyStats.team++;
+                        performerIds.forEach(oid => {
+                            if (oid !== id && !p.monthlyLinks.includes(oid)) {
+                                p.monthlyLinks.push(oid);
+                                if (p.monthlyLinks.length === 3) p.coins += 50;
+                                if (p.secretRole === 'Diplomat') p.coins += 10;
+                            }
+                        });
+                        state.energy = Math.min(100, state.energy + 2);
+                    } else {
+                        p.weeklyStats.personal++;
+                    }
+                    if (p.secretRole === 'Catalyst' && task.type === 'team') p.influence += 5;
+                });
+                state.events.push({ text: `Задача "${task.title}" выполнена`, time: Date.now() });
+                state.save(); ui.toast('Награды начислены'); ui.render();
+            },
+
+            async sync() {
+                ui.toast('Синхронизация...');
+                try {
+                    await fetch(state.googleUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(state) });
+                    ui.toast('Данные в таблице!');
+                } catch(e) { ui.toast('Ошибка синхронизации'); }
             }
         };
 
-        /** UI ENGINE **/
+        /** UI **/
         const ui = {
             current: 'home',
-
-            toast(msg) {
-                const t = document.getElementById('toast');
-                t.textContent = msg; t.style.display = 'block';
-                setTimeout(() => t.style.display = 'none', 3000);
+            navigate(tab, el) { 
+                this.current = tab; 
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                if(el) el.classList.add('active'); 
+                this.render(); 
             },
-
-            nav(view, el) {
-                this.current = view;
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                if(el) el.classList.add('active');
-                this.render();
-            },
-
+            toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); },
+            
             render() {
-                const container = document.getElementById('view-content');
-                const p = state.participants.find(x => x.name === state.currentUser.name || x.id === state.currentUser.id);
-                
+                const cont = document.getElementById('view-content'), p = logic.getParticipant();
                 document.getElementById('header-coins').textContent = p.coins + ' 🪙';
                 document.getElementById('header-avatar').textContent = p.name[0];
-
-                if(this.current === 'home') this.viewHome(container, p);
-                if(this.current === 'tasks') this.viewTasks(container);
-                if(this.current === 'rating') this.viewRating(container);
-                if(this.current === 'store') this.viewStore(container, p);
-                if(this.current === 'links') this.viewLinks(container, p);
-                if(this.current === 'admin') this.viewAdmin(container);
+                
+                if (this.current === 'home') this.viewHome(cont, p);
+                if (this.current === 'tasks') this.viewTasks(cont);
+                if (this.current === 'rating') this.viewRating(cont);
+                if (this.current === 'store') this.viewStore(cont, p);
+                if (this.current === 'links') this.viewLinks(cont, p);
+                if (this.current === 'admin') this.viewAdmin(cont);
             },
 
-            viewHome(cont, p) {
-                cont.innerHTML = `
+            viewHome(c, p) {
+                c.innerHTML = `
                     <div class="card">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-weight:700;">Энергия Парламента</span>
                             <span style="font-weight:800; color:var(--primary);">${state.energy}%</span>
                         </div>
-                        <div class="energy-box">
-                            <div class="progress-container"><div class="progress-fill" style="width:${state.energy}%"></div></div>
-                        </div>
-                        <p style="font-size:12px; color:var(--text-secondary); margin-top:10px;">
-                            ${state.energy > 70 ? '🔥 Высокий тонус! +10% к наградам' : '⚓ Обычный режим'}
+                        <div class="energy-bar-wrap"><div class="energy-bar-fill" style="width:${state.energy}%"></div></div>
+                        <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;">
+                            ${state.energy > 70 ? '🔥 Бонус +10% к наградам активен' : state.energy < 30 ? '⚠️ Награды снижены на 10%' : 'Стандартный режим начислений'}
                         </p>
                     </div>
-
-                    <div class="stats-row">
-                        <div class="stat-card"><span class="stat-val">${p.influence}</span><span class="stat-label">Влияние</span></div>
-                        <div class="stat-card"><span class="stat-val">${p.trust}</span><span class="stat-label">Доверие</span></div>
+                    <div class="stats-grid">
+                        <div class="stat-item"><span class="stat-val">${p.influence}</span><span class="stat-lab">Influence</span></div>
+                        <div class="stat-item"><span class="stat-val">${p.trust}</span><span class="stat-lab">Trust (Week)</span></div>
                     </div>
-
-                    <h3>Ваш профиль</h3>
                     <div class="card">
-                        <div class="item-row"><span>Отряд</span><span class="badge badge-blue">${p.squad}</span></div>
-                        <div class="item-row"><span>Роль</span><span>${p.gameRole}</span></div>
-                        <div class="item-row"><span>Группа</span><span>${state.currentUser.group}</span></div>
+                        <h3>Сезон 1 • Неделя ${state.seasonWeek}/4</h3>
+                        <div class="energy-bar-wrap"><div class="energy-bar-fill" style="width:${(state.seasonWeek/4)*100}%; background:var(--primary);"></div></div>
+                        <div style="margin-top:12px;">
+                            ${p.titles.map(t => `<span class="badge badge-success">${t}</span>`).join('')}
+                        </div>
                     </div>
-
-                    <h3>Активные альянсы</h3>
-                    ${state.alliances.length ? state.alliances.map(a => `<div class="card">${a.squad1} + ${a.squad2} (до ${a.end})</div>`).join('') : '<p style="color:var(--text-secondary)">Нет активных альянсов</p>'}
+                    <h3>Последние события</h3>
+                    ${state.events.slice(-5).reverse().map(e => `<div class="list-item"><span>${e.text}</span><span style="font-size:10px; color:var(--text-secondary);">${new Date(e.time).toLocaleTimeString()}</span></div>`).join('') || '<p>Событий пока нет</p>'}
                 `;
             },
 
-            viewTasks(cont) {
-                cont.innerHTML = `<h3>Миссии недели</h3>` + state.tasks.map(t => `
-                    <div class="card" onclick="ui.taskAction('${t.id}')">
+            viewTasks(c) {
+                c.innerHTML = `<h3>Задачи</h3>` + state.tasks.map(t => `
+                    <div class="card" onclick="ui.showTask('${t.id}')">
                         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span class="badge badge-blue">${t.type}</span>
-                            <span style="color:var(--success); font-weight:700;">+${t.rC} 🪙</span>
+                            <span class="badge badge-primary">${t.type}</span>
+                            <span style="color:var(--success); font-weight:700;">+${t.rewardCoins} 🪙</span>
                         </div>
-                        <div style="font-weight:700; margin-bottom:4px;">${t.title}</div>
-                        <div style="font-size:13px; color:var(--text-secondary);">${t.desc}</div>
+                        <div style="font-weight:700;">${t.title}</div>
+                        <div style="font-size:12px; color:var(--text-secondary);">${t.desc}</div>
                     </div>
                 `).join('');
+                c.innerHTML += `<h3>Активные Альянсы</h3>` + (state.alliances.length ? state.alliances.map(a => `<div class="card">Отряды ${a.s1} + ${a.s2} (Бонус x1.3)</div>`).join('') : '<p>Нет активных альянсов</p>');
             },
 
-            viewRating(cont) {
-                const sorted = [...state.participants].sort((a,b) => b.influence - a.influence);
-                cont.innerHTML = `<h3>Лидеры влияния</h3>` + sorted.map((p, i) => `
-                    <div class="item-row">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <span style="font-weight:800; width:20px; color:var(--text-secondary);">${i+1}</span>
-                            <div>
-                                <div style="font-weight:600; font-size:14px;">${p.name}</div>
-                                <div style="font-size:11px; color:var(--text-secondary);">Отряд ${p.squad} • ${p.gameRole}</div>
+            viewRating(c) {
+                c.innerHTML = `<div class="sub-tabs">
+                    <div class="sub-tab active" onclick="ui.sortRating('influence', this)">Influence</div>
+                    <div class="sub-tab" onclick="ui.sortRating('coins', this)">Coins</div>
+                    <div class="sub-tab" onclick="ui.sortRating('teamwork', this)">Teamwork</div>
+                    <div class="sub-tab" onclick="ui.sortRating('squads', this)">Squads</div>
+                </div><div id="rating-list"></div>`;
+                this.sortRating('influence');
+            },
+
+            sortRating(type, el) {
+                if(el) { document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
+                const list = document.getElementById('rating-list');
+                let html = '';
+                if(type === 'squads') {
+                    const s = {A:0, B:0, C:0, D:0};
+                    state.participants.forEach(p => s[p.squad] += p.influence);
+                    Object.entries(s).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => {
+                        html += `<div class="list-item"><span>Отряд ${k}</span><span style="font-weight:800;">${v} ✨</span></div>`;
+                    });
+                } else {
+                    const sorted = [...state.participants].sort((a,b) => (type==='influence'?b.influence-a.influence : type==='coins'?b.coins-a.coins : b.weeklyStats.team-a.weeklyStats.team));
+                    sorted.forEach((p, i) => {
+                        html += `<div class="list-item">
+                            <div style="display:flex; align-items:center;">
+                                <span style="font-weight:800; width:20px;">${i+1}</span>
+                                <div><b>${p.name}</b> ${p.titles.length?'<span class="title-badge">Title</span>':''}<br><small>${p.squad} • ${p.gameRole}</small></div>
                             </div>
-                        </div>
-                        <div style="font-weight:700;">${p.influence} ✨</div>
-                    </div>
-                `).join('');
+                            <span style="font-weight:700;">${type==='influence'?p.influence:type==='coins'?p.coins:p.weeklyStats.team}</span>
+                        </div>`;
+                    });
+                }
+                list.innerHTML = html;
             },
 
-            viewStore(cont, p) {
-                cont.innerHTML = `
-                    <div class="card" style="background:var(--primary); color:white; text-align:center;">
-                        <div style="font-size:12px; opacity:0.8;">Доступно</div>
-                        <div style="font-size:32px; font-weight:800;">${p.coins} 🪙</div>
-                    </div>
-                    <h3>Магазин бонусов</h3>
-                ` + state.store.map(s => `
+            viewStore(c, p) {
+                c.innerHTML = `<div class="card" style="background:var(--primary); color:white; text-align:center;">
+                    <p style="margin:0; font-size:12px; opacity:0.8;">Ваш баланс</p>
+                    <div style="font-size:32px; font-weight:800;">${p.coins} 🪙</div>
+                </div>` + state.store.map(s => `
                     <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:700;">${s.name}</div>
-                            <div style="font-size:12px; color:var(--text-secondary);">${s.type === 'ind' ? 'Индивидуально' : 'Командно'}</div>
-                        </div>
-                        <button class="btn btn-small" onclick="logic.buy('${s.id}')">${s.price} 🪙</button>
+                        <div><b>${s.name}</b><br><small>${s.type==='ind'?'Индивидуально':'Команда'}</small></div>
+                        <button class="btn btn-small" onclick="ui.buy('${s.id}')">${s.price} 🪙</button>
                     </div>
                 `).join('');
             },
 
-            viewLinks(cont, p) {
-                cont.innerHTML = `
+            viewLinks(c, p) {
+                c.innerHTML = `
                     <div class="card" style="text-align:center;">
-                        <h3>Связки Месяца</h3>
+                        <h3>Связки месяца</h3>
                         <div style="font-size:48px; font-weight:800; color:var(--primary);">${p.monthlyLinks.length}/3</div>
-                        <p style="font-size:13px; color:var(--text-secondary);">Соберите 3 связки с разными людьми для бонуса 50 🪙</p>
+                        <p style="font-size:12px; color:var(--text-secondary);">Соберите 3 связки для бонуса 50 🪙</p>
                     </div>
-                    <button class="btn btn-outline" onclick="ui.modalTrust()">Выдать доверие ❤️</button>
+                    <button class="btn btn-outline" onclick="ui.modalTrust()">❤️ Выдать доверие</button>
+                    <h3>История связей</h3>
+                    ${p.monthlyLinks.map(id => {
+                        const op = state.participants.find(x => x.id === id);
+                        return `<div class="list-item"><span>${op?.name || 'Участник'}</span><span class="badge badge-primary">${op?.squad}</span></div>`;
+                    }).join('') || '<p>Связей пока нет</p>'}
                 `;
             },
 
-            viewAdmin(cont) {
-                cont.innerHTML = `
-                    <div class="card">
-                        <h3>Панель управления</h3>
-                        <button class="btn btn-sync" onclick="logic.syncToGoogle()" style="background:#34C759; margin-bottom:12px;">📤 Экспорт в Таблицу</button>
-                        <button class="btn btn-outline" onclick="logic.ceremony()">🏆 Запустить церемонию</button>
-                        <button class="btn btn-outline" onclick="logic.resetSeason()" style="border-color:var(--danger); color:var(--danger); margin-top:20px;">Сброс сезона</button>
+            viewAdmin(c) {
+                c.innerHTML = `
+                    <div id="admin-lock" class="card">
+                        <h3>Защищенный вход</h3>
+                        <input type="password" id="admin-pass" placeholder="Пароль админа">
+                        <button class="btn mt-12" onclick="ui.unlockAdmin()">Войти</button>
                     </div>
-                    <h3>Участники (${state.participants.length})</h3>
-                    <div id="admin-list">
-                        ${state.participants.map(p => `<div class="item-row"><span>${p.name}</span> <button class="btn btn-small" onclick="ui.modalUser('${p.id}')">Изменить</button></div>`).join('')}
+                    <div id="admin-body" class="hidden">
+                        <button class="btn" onclick="ui.modalAddTask()">+ Создать задачу</button>
+                        <button class="btn btn-outline" onclick="ui.modalWeeklyCeremony()">Запустить церемонию</button>
+                        <button class="btn btn-outline" onclick="logic.sync()">📤 Синхронизация Google</button>
+                        <button class="btn btn-outline" onclick="ui.modalAlliance()">🤝 Создать альянс</button>
+                        <h3>Управление участниками</h3>
+                        ${state.participants.map(p => `
+                            <div class="list-item">
+                                <span>${p.name} [${p.squad}]</span>
+                                <button class="btn btn-small" onclick="ui.modalCompleteTaskFor('${p.id}')">Засчитать задачу</button>
+                            </div>
+                        `).join('')}
+                        <div class="card" style="margin-top:20px; border-color:var(--danger);">
+                            <button class="btn btn-danger" onclick="localStorage.clear(); location.reload();">СБРОСИТЬ ВСЕ</button>
+                        </div>
                     </div>
                 `;
+            },
+
+            unlockAdmin() {
+                if(document.getElementById('admin-pass').value === 'admin123') {
+                    document.getElementById('admin-lock').classList.add('hidden');
+                    document.getElementById('admin-body').classList.remove('hidden');
+                } else ui.toast('Неверный пароль');
             },
 
             showProfile() {
-                const p = state.participants.find(x => x.name === state.currentUser.name);
+                const p = logic.getParticipant();
                 this.openModal(`
                     <div style="text-align:center;">
-                        <div style="width:64px; height:64px; border-radius:50%; background:var(--primary); color:white; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800;">${p.name[0]}</div>
+                        <div style="width:70px; height:70px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; margin:0 auto 15px;">${p.name[0]}</div>
                         <h2>${p.name}</h2>
-                        <p>${state.currentUser.role}</p>
-                        <button class="btn btn-danger" onclick="localStorage.removeItem('kurultai_session'); location.reload();">Выйти</button>
+                        <p>${state.currentUser.roleTitle} • Отряд ${p.squad}</p>
+                        <div class="stats-grid">
+                            <div class="stat-item"><span class="stat-val">${p.coins}</span><span class="stat-lab">Coins</span></div>
+                            <div class="stat-item"><span class="stat-val">${p.influence}</span><span class="stat-lab">Influence</span></div>
+                        </div>
+                        <button class="btn btn-danger" onclick="localStorage.removeItem('kurultai_pro_session'); location.reload();">Выйти</button>
                     </div>
                 `);
             },
 
             modalTrust() {
+                const p = logic.getParticipant();
                 this.openModal(`
                     <h3>Выдать доверие</h3>
+                    <p style="font-size:12px; color:var(--text-secondary);">Выберите одного участника. Нельзя выбирать того же человека дважды подряд.</p>
                     <div class="input-group">
-                        <label>Кому выдаем?</label>
                         <select id="trust-target">
-                            ${state.participants.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                            ${state.participants.filter(x => x.id !== p.id && x.id !== p.lastTrustGivenTo).map(x => `<option value="${x.id}">${x.name}</option>`).join('')}
                         </select>
                     </div>
-                    <button class="btn" onclick="logic.giveTrust()">Подтвердить +10 Trust</button>
+                    <button class="btn" onclick="ui.confirmTrust()">Выдать +10 Trust</button>
                 `);
             },
 
-            taskAction(id) {
+            confirmTrust() {
+                const targetId = document.getElementById('trust-target').value, me = logic.getParticipant(), target = state.participants.find(x => x.id === targetId);
+                target.trust += 10; me.lastTrustGivenTo = targetId;
+                state.events.push({ text: `${me.name} выразил доверие ${target.name}`, time: Date.now() });
+                state.save(); ui.closeModal(); ui.toast('Доверие выдано!'); ui.render();
+            },
+
+            showTask(id) {
                 const t = state.tasks.find(x => x.id === id);
                 this.openModal(`
                     <h3>${t.title}</h3>
                     <p>${t.desc}</p>
-                    <button class="btn" onclick="ui.closeModal()">Закрыть</button>
+                    <div class="card" style="background:var(--bg);">
+                        Награда: <b>${t.rewardCoins} coins</b> и <b>${t.rewardInfluence} influence</b>
+                    </div>
+                    <p style="font-size:11px; color:var(--text-secondary);">Засчитывается администратором в конце дня.</p>
                 `);
             },
 
-            openModal(html) {
-                document.getElementById('modal-inner').innerHTML = html;
-                document.getElementById('modal').classList.add('active');
-            },
-            closeModal(e) {
-                if(e && e.target !== document.getElementById('modal')) return;
-                document.getElementById('modal').classList.remove('active');
-            }
-        };
-
-        /** LOGIC MODULE **/
-        const logic = {
-            async syncToGoogle() {
-                ui.toast('Синхронизация...');
-                try {
-                    // Используем прокси или прямое обращение (GAS требует POST)
-                    await fetch(state.googleUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            participants: state.participants,
-                            energy: state.energy,
-                            week: state.seasonWeek
-                        })
-                    });
-                    ui.toast('Данные отправлены!');
-                } catch(e) {
-                    ui.toast('Ошибка синхронизации');
-                }
+            modalCompleteTaskFor(pid) {
+                this.openModal(`
+                    <h3>Засчитать задачу</h3>
+                    <div class="input-group">
+                        <label>Задача</label>
+                        <select id="task-select">
+                            ${state.tasks.map(t => `<option value="${t.id}">${t.title}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Другие участники (через запятую ID)</label>
+                        <input type="text" id="task-others" placeholder="p1, p5...">
+                    </div>
+                    <button class="btn" onclick="ui.confirmTask('${pid}')">Начислить</button>
+                `);
             },
 
-            giveTrust() {
-                const tid = document.getElementById('trust-target').value;
-                const target = state.participants.find(x => x.id === tid);
-                target.trust += 10;
-                state.save();
+            confirmTask(pid) {
+                const tid = document.getElementById('task-select').value, others = document.getElementById('task-others').value.split(',').map(x=>x.trim()).filter(x=>x);
+                logic.completeTask(tid, [pid, ...others]);
                 ui.closeModal();
-                ui.toast('Доверие передано!');
-                ui.render();
+            },
+
+            modalWeeklyCeremony() {
+                const topInf = [...state.participants].sort((a,b) => b.influence - a.influence).slice(0, 5);
+                const winnerTrust = [...state.participants].sort((a,b) => b.trust - a.trust)[0];
+                this.openModal(`
+                    <div style="text-align:center;">
+                        <h1 style="color:var(--warning);">WEEKLY CEREMONY</h1>
+                        <h3>🏆 Voice of Kurultai</h3>
+                        <p>${winnerTrust.name} (+100 influence)</p>
+                        <h3>Топ недели (Influence)</h3>
+                        ${topInf.map(p => `<div class="list-item"><span>${p.name}</span><span>${p.influence}</span></div>`).join('')}
+                        <button class="btn mt-12" onclick="ui.runWeeklyReset()">ЗАВЕРШИТЬ НЕДЕЛЮ</button>
+                    </div>
+                `);
+            },
+
+            runWeeklyReset() {
+                const winnerTrust = [...state.participants].sort((a,b) => b.trust - a.trust)[0];
+                winnerTrust.influence += 100;
+                winnerTrust.titles.push("Voice of Kurultai");
+                state.seasonWeek++;
+                state.participants.forEach(p => { p.trust = 0; p.weeklyStats = { personal:0, team:0 }; });
+                state.alliances = [];
+                state.save(); ui.closeModal(); ui.toast('Сезон обновлен!'); ui.render();
+            },
+
+            modalAlliance() {
+                this.openModal(`
+                    <h3>Новый Альянс</h3>
+                    <div class="input-group"><label>Отряд 1</label><select id="a1"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+                    <div class="input-group"><label>Отряд 2</label><select id="a2"><option>B</option><option>A</option><option>C</option><option>D</option></select></div>
+                    <button class="btn" onclick="ui.confirmAlliance()">Заключить на 7 дней</button>
+                `);
+            },
+
+            confirmAlliance() {
+                const s1 = document.getElementById('a1').value, s2 = document.getElementById('a2').value;
+                if(s1 === s2) return ui.toast('Нужны разные отряды');
+                state.alliances.push({ s1, s2, expiry: Date.now() + 7*24*60*60*1000 });
+                state.save(); ui.closeModal(); ui.toast('Альянс создан!'); ui.render();
             },
 
             buy(id) {
-                const s = state.store.find(x => x.id === id);
-                const p = state.participants.find(x => x.name === state.currentUser.name);
+                const s = state.store.find(x => x.id === id), p = logic.getParticipant();
                 if(p.coins < s.price) return ui.toast('Недостаточно монет');
                 p.coins -= s.price;
-                state.save();
-                ui.toast('Куплено: ' + s.name);
-                ui.render();
+                state.events.push({ text: `${p.name} приобрел ${s.name}`, time: Date.now() });
+                state.save(); ui.render(); ui.toast('Покупка успешна!');
             },
 
-            ceremony() {
-                if(!confirm('Завершить неделю?')) return;
-                state.seasonWeek++;
-                state.energy += 5;
-                state.save();
-                ui.toast('Церемония завершена! Неделя ' + state.seasonWeek);
-                ui.render();
-            },
-
-            resetSeason() {
-                if(!confirm('Это удалит все достижения! Вы уверены?')) return;
-                localStorage.clear();
-                location.reload();
-            }
+            openModal(h) { document.getElementById('modal-inner').innerHTML = h; document.getElementById('modal').classList.add('active'); },
+            closeModal(e) { if(e && e.target !== document.getElementById('modal')) return; document.getElementById('modal').classList.remove('active'); }
         };
 
         const app = {
@@ -561,17 +584,14 @@
                 } else {
                     document.getElementById('auth-screen').classList.add('hidden');
                     document.getElementById('app').classList.remove('hidden');
-                    
-                    const role = state.currentUser.role.toLowerCase();
-                    if(role.includes('председатель') || role.includes('админ')) {
-                        document.getElementById('admin-tab').classList.remove('hidden');
-                    }
+                    const r = state.currentUser.roleTitle.toLowerCase();
+                    if(r.includes('председатель') || r.includes('админ')) document.getElementById('admin-nav').classList.remove('hidden');
                     ui.render();
                 }
             }
         };
 
-        window.onload = () => app.init();
+        window.onload = app.init;
     </script>
 </body>
 </html>
