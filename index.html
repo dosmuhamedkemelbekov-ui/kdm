@@ -12,100 +12,355 @@
     
     <style>
         :root {
-            --bg: #05070A;
-            --text: #ffffff;
-            --accent: #00D1FF; /* Электрический голубой - цвет КДМ */
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg: #0A0E1A;
+            --bg-secondary: #0F1624;
+            --text: #FFFFFF;
+            --text-secondary: #A0AEC0;
+            --accent: #00D9FF;
+            --accent-hover: #00B8E6;
+            --accent-light: rgba(0, 217, 255, 0.1);
+            --accent-border: rgba(0, 217, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --success: #10B981;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-accent: 0 8px 32px rgba(0, 217, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg);
+            background: linear-gradient(135deg, #0A0E1A 0%, #0F1624 50%, #0A0E1A 100%);
+            background-attachment: fixed;
             color: var(--text);
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             overflow-x: hidden;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            line-height: 1.6;
+            min-height: 100vh;
         }
 
-        .font-space { font-family: 'Space Grotesk', sans-serif; }
+        .font-space { 
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.02em;
+        }
 
         .glass {
             background: var(--glass);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass:hover {
+            background: var(--glass-hover);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .accent-gradient {
-            background: linear-gradient(135deg, #00D1FF 0%, #007AFF 100%);
+            background: linear-gradient(135deg, #00D9FF 0%, #0099FF 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-accent);
         }
 
-        .nav-btn { opacity: 0.4; transition: 0.3s; }
-        .nav-btn.active { opacity: 1; color: var(--accent); }
+        .accent-gradient:hover {
+            background: linear-gradient(135deg, #00B8E6 0%, #0088E6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.25);
+        }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: slideUp 0.3s ease-out; }
+        .accent-gradient:active {
+            transform: translateY(0);
+        }
+
+        .nav-btn { 
+            opacity: 0.5; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .nav-btn:hover {
+            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active { 
+            opacity: 1; 
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .tab-content { 
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-content.active { 
+            display: block; 
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .kdm-card {
-            background: linear-gradient(180deg, rgba(0, 209, 255, 0.1) 0%, rgba(5, 7, 10, 0) 100%);
-            border: 1px solid rgba(0, 209, 255, 0.2);
+            background: linear-gradient(180deg, rgba(0, 217, 255, 0.08) 0%, rgba(15, 22, 36, 0.4) 100%);
+            border: 1px solid var(--accent-border);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--glass-border);
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-left-color: var(--accent);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Custom Scrollbar */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
+
+        .no-scrollbar::-webkit-scrollbar { 
+            display: none; 
+        }
         
         #registration-screen, #login-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; padding: 30px;
+            position: fixed; 
+            inset: 0; 
+            background: linear-gradient(135deg, #0A0E1A 0%, #0F1624 100%);
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column; 
+            padding: 40px 24px;
+            overflow-y: auto;
         }
 
         .input-kdm {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            padding: 16px;
+            padding: 16px 20px;
             width: 100%;
             outline: none;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 500;
         }
-        .input-kdm:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 209, 255, 0.2); }
+
+        .input-kdm::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .input-kdm:focus { 
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.1), var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .input-kdm:hover:not(:focus) {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        select.input-kdm {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300D9FF' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Улучшенные карточки заданий */
+        .task-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .task-btn {
+            background: var(--accent-light);
+            border: 1px solid var(--accent-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-btn:hover {
+            background: rgba(0, 217, 255, 0.15);
+            border-color: var(--accent);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
+        }
+
+        /* Улучшенный navbar */
+        nav {
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Центральная кнопка QR */
+        nav button.accent-gradient {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        nav button.accent-gradient:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.3);
+        }
+
+        /* Улучшенные карточки магазина */
+        .shop-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .shop-item:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Улучшенная модалка */
+        #proof-modal {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        #proof-modal .glass {
+            box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        textarea {
+            resize: none;
+            font-family: inherit;
+        }
+
+        /* Улучшенный header */
+        header {
+            background: linear-gradient(180deg, rgba(10, 14, 26, 0.8) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Улучшенные элементы истории */
+        .history-item {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .history-item:hover {
+            transform: translateX(4px);
+            background: var(--glass-hover);
+        }
+
+        /* Улучшенный рейтинг */
+        .leader-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .leader-item:hover {
+            transform: translateX(6px);
+            background: var(--glass-hover);
+        }
+
+        /* Анимация появления баланса */
+        #balance {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Прогресс бар */
+        #progress {
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        }
+
+        /* Аватар с градиентом */
+        #user-avatar {
+            box-shadow: 0 4px 16px rgba(0, 217, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 24px rgba(0, 217, 255, 0.3);
+        }
     </style>
 </head>
 <body class="pb-24">
 
     <!-- Loader -->
-    <div id="loader" class="fixed inset-0 bg-[#05070A] z-[10000] flex items-center justify-center">
+    <div id="loader" class="fixed inset-0 bg-gradient-to-br from-[#0A0E1A] to-[#0F1624] z-[10000] flex items-center justify-center">
         <div class="text-center">
-            <div class="loader mx-auto mb-4"></div>
-            <p class="text-xs font-bold tracking-widest text-cyan-500 uppercase">KDM HUB Loading...</p>
+            <div class="loader mx-auto mb-6"></div>
+            <p class="text-sm font-bold tracking-widest text-cyan-400 uppercase">KDM HUB Loading...</p>
         </div>
     </div>
 
     <!-- Регистрация -->
-    <section id="registration-screen" class="justify-center">
-        <div class="mb-10 text-center">
-            <h2 class="text-3xl font-extrabold font-space text-cyan-400">KDM HUB</h2>
-            <p class="text-gray-400 text-sm mt-2">Стань частью молодежного движения</p>
+    <section id="registration-screen" class="justify-center max-w-md mx-auto">
+        <div class="mb-12 text-center">
+            <h2 class="text-4xl font-extrabold font-space bg-gradient-to-br from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">KDM HUB</h2>
+            <p class="text-gray-400 text-base">Стань частью молодежного движения</p>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-5">
             <input type="text" id="reg-name" class="input-kdm" placeholder="ФИО полностью">
             <input type="text" id="reg-group" class="input-kdm" placeholder="Факультет и Группа">
-            <select id="reg-unit" class="input-kdm text-gray-400">
+            <select id="reg-unit" class="input-kdm">
                 <option value="Media">Media Unit</option>
                 <option value="Volunteers">Volunteers Unit</option>
                 <option value="Sport">Sport & Health</option>
@@ -113,53 +368,53 @@
                 <option value="Event">Event Management</option>
             </select>
             <input type="password" id="reg-pass" class="input-kdm" placeholder="Придумайте пароль">
-            <button onclick="submitRegistration()" class="w-full py-4 accent-gradient rounded-2xl font-bold text-white shadow-lg shadow-cyan-500/20 uppercase mt-4">Зарегистрироваться</button>
+            <button onclick="submitRegistration()" class="w-full py-4 accent-gradient rounded-2xl font-bold text-white uppercase mt-6">Зарегистрироваться</button>
         </div>
     </section>
 
     <!-- Основное приложение -->
     <div id="main-app" style="display:none">
         <!-- Header -->
-        <header class="p-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div id="user-avatar" class="w-12 h-12 rounded-2xl accent-gradient p-[2px]">
-                    <div class="bg-[#05070A] w-full h-full rounded-[14px] flex items-center justify-center overflow-hidden">
-                        <i class="fas fa-user-graduate text-cyan-400"></i>
+        <header class="p-6 pb-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div id="user-avatar" class="w-14 h-14 rounded-2xl accent-gradient p-[2px]">
+                    <div class="bg-[#0A0E1A] w-full h-full rounded-[14px] flex items-center justify-center overflow-hidden">
+                        <i class="fas fa-user-graduate text-cyan-400 text-lg"></i>
                     </div>
                 </div>
                 <div>
-                    <h1 id="user-name" class="text-sm font-bold">...</h1>
-                    <div class="flex items-center gap-2">
-                        <p id="user-rank" class="text-[10px] font-extrabold text-cyan-400 uppercase">Активист</p>
+                    <h1 id="user-name" class="text-base font-bold tracking-tight">...</h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <p id="user-rank" class="text-[11px] font-extrabold text-cyan-400 uppercase tracking-wider">Активист</p>
                     </div>
                 </div>
             </div>
             <div class="text-right">
-                <p id="user-unit-top" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">...</p>
-                <p id="user-group" class="text-[9px] font-medium text-cyan-500/50 uppercase">...</p>
+                <p id="user-unit-top" class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">...</p>
+                <p id="user-group" class="text-[10px] font-medium text-cyan-400/60 uppercase mt-1">...</p>
             </div>
         </header>
 
         <main class="px-6">
             <!-- Главная: Баланс -->
             <section id="dashboard" class="tab-content active">
-                <div class="kdm-card rounded-[32px] p-8 text-center mb-8">
-                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-[0.2em] mb-4">Ваш баланс K-Coins</p>
-                    <div class="flex justify-center items-center gap-3 mb-6">
-                        <span id="balance" class="text-6xl font-space font-bold tracking-tighter">0</span>
+                <div class="kdm-card rounded-3xl p-8 text-center mb-8">
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-[0.15em] mb-5">Ваш баланс K-Coins</p>
+                    <div class="flex justify-center items-baseline gap-3 mb-8">
+                        <span id="balance" class="text-7xl font-space font-bold tracking-tighter bg-gradient-to-br from-cyan-400 to-blue-400 bg-clip-text text-transparent">0</span>
                         <div class="text-left">
-                            <p class="text-cyan-400 font-bold leading-none">KC</p>
+                            <p class="text-cyan-400 font-bold leading-none text-lg">KC</p>
                             <p class="text-[10px] text-gray-500 uppercase">коинов</p>
                         </div>
                     </div>
-                    <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                        <div id="progress" class="h-full accent-gradient" style="width: 0%"></div>
+                    <div class="w-full h-2.5 bg-white/5 rounded-full overflow-hidden mb-4">
+                        <div id="progress" class="h-full accent-gradient rounded-full" style="width: 0%"></div>
                     </div>
-                    <p id="level-guide" class="text-[9px] text-gray-500 mt-3 font-bold uppercase">... до звания Организатор</p>
+                    <p id="level-guide" class="text-[10px] text-gray-400 mt-4 font-semibold">... до звания Организатор</p>
                 </div>
 
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500">Последние баллы</h2>
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400">Последние баллы</h2>
                 </div>
                 <div id="history-list" class="space-y-3">
                     <!-- Сюда придут данные -->
@@ -168,56 +423,56 @@
 
             <!-- Задания -->
             <section id="earn" class="tab-content">
-                <h2 class="text-2xl font-space font-bold mb-6">Миссии КДМ</h2>
+                <h2 class="text-3xl font-space font-bold mb-8 tracking-tight">Миссии КДМ</h2>
                 <div class="space-y-4">
-                    <div class="glass p-5 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-sm">Участие в форуме</p>
-                            <p class="text-[10px] text-gray-400">Присутствие + отчет</p>
+                    <div class="glass p-6 flex justify-between items-center task-card">
+                        <div class="flex-1">
+                            <p class="font-bold text-base mb-1">Участие в форуме</p>
+                            <p class="text-xs text-gray-400">Присутствие + отчет</p>
                         </div>
-                        <button onclick="openProofModal('Участие в форуме', 25)" class="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400 text-[10px] font-bold">+25 KC</button>
+                        <button onclick="openProofModal('Участие в форуме', 25)" class="task-btn px-5 py-2.5 rounded-xl text-cyan-400 text-xs font-bold ml-4">+25 KC</button>
                     </div>
-                    <div class="glass p-5 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-sm">Пост в соцсетях</p>
-                            <p class="text-[10px] text-gray-400">Отметка @KDM_HUB</p>
+                    <div class="glass p-6 flex justify-between items-center task-card">
+                        <div class="flex-1">
+                            <p class="font-bold text-base mb-1">Пост в соцсетях</p>
+                            <p class="text-xs text-gray-400">Отметка @KDM_HUB</p>
                         </div>
-                        <button onclick="openProofModal('Пост в соцсетях', 15)" class="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400 text-[10px] font-bold">+15 KC</button>
+                        <button onclick="openProofModal('Пост в соцсетях', 15)" class="task-btn px-5 py-2.5 rounded-xl text-cyan-400 text-xs font-bold ml-4">+15 KC</button>
                     </div>
-                    <div class="glass p-5 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-sm">Организация ивента</p>
-                            <p class="text-[10px] text-gray-400">Для лидеров юнитов</p>
+                    <div class="glass p-6 flex justify-between items-center task-card">
+                        <div class="flex-1">
+                            <p class="font-bold text-base mb-1">Организация ивента</p>
+                            <p class="text-xs text-gray-400">Для лидеров юнитов</p>
                         </div>
-                        <button onclick="openProofModal('Организация ивента', 100)" class="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400 text-[10px] font-bold">+100 KC</button>
+                        <button onclick="openProofModal('Организация ивента', 100)" class="task-btn px-5 py-2.5 rounded-xl text-cyan-400 text-xs font-bold ml-4">+100 KC</button>
                     </div>
                 </div>
             </section>
 
             <!-- Магазин Мерча -->
             <section id="shop" class="tab-content">
-                <h2 class="text-2xl font-space font-bold mb-6">KDM Market</h2>
+                <h2 class="text-3xl font-space font-bold mb-8 tracking-tight">KDM Market</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="glass p-4 text-center">
-                        <div class="h-24 bg-cyan-500/5 rounded-xl mb-3 flex items-center justify-center">
-                            <i class="fas fa-tshirt text-2xl text-cyan-500"></i>
+                    <div class="glass p-5 text-center shop-item">
+                        <div class="h-28 bg-gradient-to-br from-cyan-500/10 to-blue-500/5 rounded-2xl mb-4 flex items-center justify-center">
+                            <i class="fas fa-tshirt text-3xl text-cyan-400"></i>
                         </div>
-                        <p class="text-[10px] font-bold uppercase mb-1">Худи КДМ</p>
-                        <button onclick="buyItem('Худи КДМ', 500)" class="w-full py-2 accent-gradient rounded-lg text-[10px] font-bold">500 KC</button>
+                        <p class="text-xs font-bold uppercase mb-3 tracking-wider">Худи КДМ</p>
+                        <button onclick="buyItem('Худи КДМ', 500)" class="w-full py-2.5 accent-gradient rounded-xl text-xs font-bold text-white">500 KC</button>
                     </div>
-                    <div class="glass p-4 text-center">
-                        <div class="h-24 bg-cyan-500/5 rounded-xl mb-3 flex items-center justify-center">
-                            <i class="fas fa-ticket-alt text-2xl text-cyan-500"></i>
+                    <div class="glass p-5 text-center shop-item">
+                        <div class="h-28 bg-gradient-to-br from-cyan-500/10 to-blue-500/5 rounded-2xl mb-4 flex items-center justify-center">
+                            <i class="fas fa-ticket-alt text-3xl text-cyan-400"></i>
                         </div>
-                        <p class="text-[10px] font-bold uppercase mb-1">Билет в Кино</p>
-                        <button onclick="buyItem('Билет в Кино', 200)" class="w-full py-2 accent-gradient rounded-lg text-[10px] font-bold">200 KC</button>
+                        <p class="text-xs font-bold uppercase mb-3 tracking-wider">Билет в Кино</p>
+                        <button onclick="buyItem('Билет в Кино', 200)" class="w-full py-2.5 accent-gradient rounded-xl text-xs font-bold text-white">200 KC</button>
                     </div>
                 </div>
             </section>
 
             <!-- Рейтинг -->
             <section id="rating" class="tab-content">
-                <h2 class="text-2xl font-space font-bold mb-6">Лидеры</h2>
+                <h2 class="text-3xl font-space font-bold mb-8 tracking-tight">Лидеры</h2>
                 <div id="leaderboard-list" class="space-y-4">
                     <!-- Сюда придут лидеры -->
                 </div>
@@ -225,36 +480,36 @@
         </main>
 
         <!-- Navbar -->
-        <nav class="fixed bottom-6 left-6 right-6 glass p-3 flex justify-around items-center z-50 shadow-2xl">
-            <button onclick="showTab('dashboard')" class="nav-btn active flex-1 flex flex-col items-center">
-                <i class="fas fa-home text-lg"></i>
+        <nav class="fixed bottom-6 left-6 right-6 glass p-4 flex justify-around items-center z-50">
+            <button onclick="showTab('dashboard')" class="nav-btn active flex-1 flex flex-col items-center gap-1">
+                <i class="fas fa-home text-xl"></i>
             </button>
-            <button onclick="showTab('earn')" class="nav-btn flex-1 flex flex-col items-center">
-                <i class="fas fa-tasks text-lg"></i>
+            <button onclick="showTab('earn')" class="nav-btn flex-1 flex flex-col items-center gap-1">
+                <i class="fas fa-tasks text-xl"></i>
             </button>
-            <div class="flex-1 flex justify-center -mt-12">
-                <button onclick="startScan()" class="w-14 h-14 accent-gradient rounded-full flex items-center justify-center text-white shadow-lg shadow-cyan-500/40">
-                    <i class="fas fa-qrcode text-xl"></i>
+            <div class="flex-1 flex justify-center -mt-14">
+                <button onclick="startScan()" class="w-16 h-16 accent-gradient rounded-full flex items-center justify-center text-white">
+                    <i class="fas fa-qrcode text-2xl"></i>
                 </button>
             </div>
-            <button onclick="showTab('shop')" class="nav-btn flex-1 flex flex-col items-center">
-                <i class="fas fa-shopping-bag text-lg"></i>
+            <button onclick="showTab('shop')" class="nav-btn flex-1 flex flex-col items-center gap-1">
+                <i class="fas fa-shopping-bag text-xl"></i>
             </button>
-            <button onclick="showTab('rating')" class="nav-btn flex-1 flex flex-col items-center">
-                <i class="fas fa-trophy text-lg"></i>
+            <button onclick="showTab('rating')" class="nav-btn flex-1 flex flex-col items-center gap-1">
+                <i class="fas fa-trophy text-xl"></i>
             </button>
         </nav>
     </div>
 
     <!-- Модалка отчета -->
-    <div id="proof-modal" class="fixed inset-0 bg-black/90 z-[10001] hidden flex items-center justify-center p-6 backdrop-blur-md">
+    <div id="proof-modal" class="fixed inset-0 bg-black/80 z-[10001] hidden flex items-center justify-center p-6">
         <div class="glass p-8 w-full max-w-sm">
-            <h3 class="font-space text-lg font-bold text-cyan-400 mb-2 uppercase">Подтверждение</h3>
-            <p id="modal-task-name" class="text-xs text-gray-400 mb-4">Название задачи</p>
-            <textarea id="proof-input" class="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white outline-none focus:border-cyan-500 mb-6" placeholder="Вставьте ссылку на фото/пост или описание выполненной работы..."></textarea>
-            <div class="flex gap-4">
-                <button onclick="closeProofModal()" class="flex-1 text-xs font-bold uppercase opacity-50">Отмена</button>
-                <button onclick="submitTaskWithProof()" class="flex-1 py-3 accent-gradient rounded-xl text-xs font-bold text-white">Отправить</button>
+            <h3 class="font-space text-xl font-bold text-cyan-400 mb-2 tracking-tight">Подтверждение</h3>
+            <p id="modal-task-name" class="text-sm text-gray-400 mb-6">Название задачи</p>
+            <textarea id="proof-input" class="input-kdm w-full h-32 mb-6" placeholder="Вставьте ссылку на фото/пост или описание выполненной работы..."></textarea>
+            <div class="flex gap-3">
+                <button onclick="closeProofModal()" class="flex-1 py-3 rounded-xl text-sm font-bold text-gray-400 hover:text-white transition-colors">Отмена</button>
+                <button onclick="submitTaskWithProof()" class="flex-1 py-3 accent-gradient rounded-xl text-sm font-bold text-white">Отправить</button>
             </div>
         </div>
     </div>
@@ -343,14 +598,14 @@
             // История
             const historyList = document.getElementById('history-list');
             historyList.innerHTML = (data.history || []).map(h => `
-                <div class="glass p-4 flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                            <i class="fas fa-check text-[10px] text-cyan-400"></i>
+                <div class="glass p-5 flex justify-between items-center history-item">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/10 flex items-center justify-center border border-cyan-500/20">
+                            <i class="fas fa-check text-xs text-cyan-400"></i>
                         </div>
-                        <p class="text-[11px] font-bold">${h.action}</p>
+                        <p class="text-sm font-bold">${h.action}</p>
                     </div>
-                    <p class="text-xs font-black text-cyan-400">+${h.amount} KC</p>
+                    <p class="text-sm font-black text-cyan-400">+${h.amount} KC</p>
                 </div>
             `).join('');
         }
@@ -416,15 +671,15 @@
             ];
 
             list.innerHTML = leaders.map((u, i) => `
-                <div class="glass p-4 flex justify-between items-center">
+                <div class="glass p-5 flex justify-between items-center leader-item">
                     <div class="flex items-center gap-4">
-                        <span class="text-xs font-black opacity-20">0${i+1}</span>
+                        <span class="text-lg font-black opacity-30 font-space">0${i+1}</span>
                         <div>
-                            <p class="text-sm font-bold">${u.name}</p>
-                            <p class="text-[9px] uppercase text-cyan-500">${u.unit} Unit</p>
+                            <p class="text-base font-bold">${u.name}</p>
+                            <p class="text-xs uppercase text-cyan-400/70 tracking-wider mt-0.5">${u.unit} Unit</p>
                         </div>
                     </div>
-                    <p class="font-space font-bold text-cyan-400">${u.balance} KC</p>
+                    <p class="font-space font-bold text-lg text-cyan-400">${u.balance} KC</p>
                 </div>
             `).join('');
         }
@@ -433,4 +688,3 @@
     </script>
 </body>
 </html>
-
