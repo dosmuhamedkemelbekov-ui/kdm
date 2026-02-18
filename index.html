@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     
     <style>
         :root {
@@ -339,6 +340,39 @@
             transform: scale(1.05);
             box-shadow: 0 6px 24px rgba(0, 217, 255, 0.3);
         }
+
+        /* QR Scanner (browser fallback) */
+        #qr-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        #qr-modal .glass {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        #qr-video {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            object-fit: cover;
+        }
+
+        .qr-hint {
+            border: 1px solid rgba(0, 217, 255, 0.18);
+            background: rgba(0, 217, 255, 0.06);
+        }
     </style>
 </head>
 <body class="pb-24">
@@ -501,6 +535,29 @@
         </nav>
     </div>
 
+    <!-- QR Scanner (browser fallback) -->
+    <div id="qr-modal">
+        <div class="glass p-6">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="font-space text-lg font-bold tracking-tight text-cyan-400">Сканирование QR</h3>
+                    <p class="text-sm text-gray-400 mt-1">Наведи камеру на код куратора.</p>
+                </div>
+                <button id="qr-close-btn" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="relative">
+                <video id="qr-video" playsinline muted></video>
+            </div>
+
+            <div class="qr-hint rounded-2xl p-4 mt-4 text-sm text-gray-200">
+                Если камера не открылась — проверь разрешения для камеры в браузере.
+            </div>
+        </div>
+    </div>
+
     <!-- Модалка отчета -->
     <div id="proof-modal" class="fixed inset-0 bg-black/80 z-[10001] hidden flex items-center justify-center p-6">
         <div class="glass p-8 w-full max-w-sm">
@@ -515,22 +572,50 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        const tg = window.Telegram?.WebApp;
+        if (tg) tg.expand();
         
-        // ЗАМЕНИ НА СВОЙ API URL
-        const API_URL = "https://script.google.com/macros/s/AKfycbzWd4CA33udUBtp8CNWsgvjJphi_hvaLUFzgImnD2XEBoyLltVkiGZ8V-bBNhNGe3dRRQ/exec"; 
+        // ЗАМЕНИ НА СВОЙ API URL (Google Apps Script Web App)
+        const API_URL = "https://script.google.com/macros/s/AKfycbygSyu-a7EIDmp-0BYEgX3x2_johZMdl3Y9HXFofxqS46rCjUq2a07XBGcAaXkQKrwXTg/exec"; 
         
         let userLocal = {};
         let currentTask = {};
+        let qrStream = null;
+        let qrRaf = null;
+
+        function getUserId() {
+            return tg?.initDataUnsafe?.user?.id || "12345678"; // Тестовый ID для браузера
+        }
+
+        async function apiRequest(action, params = {}, options = {}) {
+            const method = options.method || "GET";
+            let res;
+
+            if (method === "POST") {
+                const body = new URLSearchParams({ action, ...params }).toString();
+                res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                    body,
+                });
+            } else {
+                const qs = new URLSearchParams({ action, ...params }).toString();
+                res = await fetch(`${API_URL}?${qs}`);
+            }
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => "");
+                throw new Error(`API ${res.status}: ${text || res.statusText}`);
+            }
+            return await res.json();
+        }
 
         // 1. Инициализация данных
         async function syncData() {
-            const userId = tg.initDataUnsafe.user?.id || "12345678"; // Тестовый ID для браузера
+            const userId = getUserId();
             
             try {
-                const res = await fetch(`${API_URL}?action=getUser&id=${userId}`);
-                const data = await res.json();
+                const data = await apiRequest("getUser", { id: String(userId) }, { method: "GET" });
                 
                 if (!data.registered) {
                     document.getElementById('loader').style.display = 'none';
@@ -563,9 +648,13 @@
             document.getElementById('loader').style.display = 'flex';
             
             try {
-                const userId = tg.initDataUnsafe.user?.id || "12345678";
-                await fetch(`${API_URL}?action=register&id=${userId}&name=${encodeURIComponent(name)}&group=${encodeURIComponent(group)}&unit=${encodeURIComponent(unit)}&password=${encodeURIComponent(pass)}`);
-                syncData();
+                const userId = getUserId();
+                await apiRequest(
+                    "register",
+                    { id: String(userId), name, group, unit, password: pass },
+                    { method: "POST" }
+                );
+                await syncData();
             } catch (e) {
                 // Если нет бэкенда, просто пускаем для теста
                 userLocal = { name, group, unit, balance: 0, history: [] };
@@ -622,7 +711,9 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            try {
+                if (typeof event !== 'undefined' && event && event.currentTarget) event.currentTarget.classList.add('active');
+            } catch (_) {}
             
             if(id === 'rating') loadLeaderboard();
         }
@@ -640,9 +731,25 @@
             const proof = document.getElementById('proof-input').value;
             if(!proof) return alert("Пожалуйста, предоставь доказательства!");
             
-            // Здесь отправка на бэкенд для модерации
-            alert("Ваш отчет отправлен на проверку куратору юнита!");
-            closeProofModal();
+            try {
+                const userId = getUserId();
+                await apiRequest(
+                    "submitProof",
+                    {
+                        id: String(userId),
+                        taskName: currentTask?.name || "",
+                        amount: String(currentTask?.amount || 0),
+                        proof,
+                    },
+                    { method: "POST" }
+                );
+                alert("Ваш отчет отправлен на проверку куратору юнита!");
+                closeProofModal();
+                document.getElementById('proof-input').value = "";
+            } catch (e) {
+                console.error(e);
+                alert("Не удалось отправить отчет. Попробуй позже.");
+            }
         }
 
         async function buyItem(name, price) {
@@ -653,22 +760,137 @@
         }
 
         function startScan() {
-            tg.showScanQrPopup({ text: "Сканируй код от куратора" }, function(text) {
-                alert("Код принят: " + text);
-                tg.closeScanQrPopup();
-            });
+            // В Telegram Mini App используем нативный сканер (сразу открывает камеру).
+            if (tg?.showScanQrPopup) {
+                tg.showScanQrPopup({ text: "Сканируй код от куратора" }, async function(text) {
+                    try {
+                        await handleQrCode(text);
+                    } finally {
+                        tg.closeScanQrPopup();
+                    }
+                });
+                return;
+            }
+
+            // Fallback для обычного браузера: открываем камеру телефона напрямую.
+            openBrowserQrScanner();
+        }
+
+        async function handleQrCode(text) {
+            const code = String(text || "").trim();
+            if (!code) return;
+
+            try {
+                const userId = getUserId();
+                const data = await apiRequest(
+                    "redeemQr",
+                    { id: String(userId), code },
+                    { method: "POST" }
+                );
+
+                if (data?.ok && data?.user) {
+                    userLocal = data.user;
+                    userLocal.id = userId;
+                    renderApp(userLocal);
+                    alert(data.message || "Код принят!");
+                } else {
+                    alert(data?.message || ("Код принят: " + code));
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Не удалось обработать QR. Проверь интернет или API.");
+            }
+        }
+
+        async function openBrowserQrScanner() {
+            const modal = document.getElementById("qr-modal");
+            const video = document.getElementById("qr-video");
+
+            modal.style.display = "flex";
+
+            try {
+                qrStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: "environment" } },
+                    audio: false,
+                });
+                video.srcObject = qrStream;
+                await video.play();
+                startQrLoop();
+            } catch (e) {
+                console.error(e);
+                alert("Нет доступа к камере. Разреши камеру в браузере.");
+                closeBrowserQrScanner();
+            }
+        }
+
+        function closeBrowserQrScanner() {
+            const modal = document.getElementById("qr-modal");
+            const video = document.getElementById("qr-video");
+
+            if (qrRaf) cancelAnimationFrame(qrRaf);
+            qrRaf = null;
+
+            if (qrStream) {
+                qrStream.getTracks().forEach(t => t.stop());
+                qrStream = null;
+            }
+
+            if (video) {
+                video.pause?.();
+                video.srcObject = null;
+            }
+
+            if (modal) modal.style.display = "none";
+        }
+
+        function startQrLoop() {
+            const video = document.getElementById("qr-video");
+            if (!video) return;
+
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+            const tick = async () => {
+                if (!video.srcObject) return;
+
+                const w = video.videoWidth || 0;
+                const h = video.videoHeight || 0;
+                if (w > 0 && h > 0) {
+                    canvas.width = w;
+                    canvas.height = h;
+                    ctx.drawImage(video, 0, 0, w, h);
+                    const imageData = ctx.getImageData(0, 0, w, h);
+                    const qr = window.jsQR?.(imageData.data, w, h);
+                    if (qr?.data) {
+                        closeBrowserQrScanner();
+                        await handleQrCode(qr.data);
+                        return;
+                    }
+                }
+
+                qrRaf = requestAnimationFrame(tick);
+            };
+
+            qrRaf = requestAnimationFrame(tick);
         }
 
         async function loadLeaderboard() {
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = `<div class="text-center p-10"><div class="loader mx-auto"></div></div>`;
             
-            // Заглушка для теста
-            const leaders = [
-                {name: "Алина Серикова", unit: "Media", balance: 1250},
-                {name: "Арман Идрисов", unit: "Sport", balance: 980},
-                {name: "Бекарыс Нуртас", unit: "Volunteers", balance: 740}
-            ];
+            let leaders = [];
+            try {
+                const data = await apiRequest("getLeaderboard", {}, { method: "GET" });
+                leaders = data?.leaders || [];
+            } catch (e) {
+                console.error(e);
+                // Заглушка для теста
+                leaders = [
+                    {name: "Алина Серикова", unit: "Media", balance: 1250},
+                    {name: "Арман Идрисов", unit: "Sport", balance: 980},
+                    {name: "Бекарыс Нуртас", unit: "Volunteers", balance: 740}
+                ];
+            }
 
             list.innerHTML = leaders.map((u, i) => `
                 <div class="glass p-5 flex justify-between items-center leader-item">
@@ -683,6 +905,11 @@
                 </div>
             `).join('');
         }
+
+        document.getElementById("qr-close-btn")?.addEventListener("click", closeBrowserQrScanner);
+        document.getElementById("qr-modal")?.addEventListener("click", (e) => {
+            if (e.target && e.target.id === "qr-modal") closeBrowserQrScanner();
+        });
 
         syncData();
     </script>
