@@ -578,6 +578,19 @@
                         </button>
                     </div>
                 </div>
+
+                <div class="h-8"></div>
+
+                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4">Смена пароля</h3>
+                <div class="glass p-6">
+                    <div class="space-y-4">
+                        <input id="admin-old-pass" class="input-kdm" placeholder="Текущий пароль" type="password">
+                        <input id="admin-new-pass" class="input-kdm" placeholder="Новый пароль" type="password">
+                        <button onclick="adminChangePassword()" class="w-full py-3 bg-white/5 border border-white/10 rounded-2xl font-bold text-gray-200 hover:bg-white/10 transition-colors">
+                            Обновить пароль
+                        </button>
+                    </div>
+                </div>
             </section>
             </main>
 
@@ -662,13 +675,14 @@
             if (tg) tg.expand();
             
             // ЗАМЕНИ НА СВОЙ API URL (Google Apps Script Web App)
-            const API_URL = "https://script.google.com/macros/s/AKfycbwicuqAa8SKkMQo-ufT75GbiQ7vXqOdgqfIINrP6GMZtuMmVo2UToNJWGR48-n2KvA3kQ/exec"; 
+            const API_URL = "https://script.google.com/macros/s/AKfycby0qPHXxQ512W5trPq0ddKTtqM-2POSjoFn5PWe2-HboqQBAUhOmiagrEVzuo8XVF5-mQ/exec"; 
             
             let userLocal = {};
             let currentTask = {};
             let qrStream = null;
             let qrRaf = null;
             let adminToken = localStorage.getItem("kdm_admin_token") || "";
+            let adminLoginName = localStorage.getItem("kdm_admin_login") || "";
 
             function getUserId() {
                 return tg?.initDataUnsafe?.user?.id || "12345678"; // Тестовый ID для браузера
@@ -1148,7 +1162,9 @@
         function updateAdminStatus() {
             const el = document.getElementById("admin-status");
             if (!el) return;
-            el.innerText = adminToken ? "Авторизован" : "Не авторизован";
+            el.innerText = adminToken
+                ? ("Авторизован как " + (adminLoginName || "admin"))
+                : "Не авторизован";
         }
 
         function openAdminLogin() {
@@ -1176,7 +1192,9 @@
                     return;
                 }
                 adminToken = String(data.token || "");
+                adminLoginName = String(data.login || login);
                 localStorage.setItem("kdm_admin_token", adminToken);
+                localStorage.setItem("kdm_admin_login", adminLoginName);
                 updateAdminStatus();
                 closeAdminLogin();
                 openAdmin();
@@ -1188,9 +1206,50 @@
 
         function adminLogout() {
             adminToken = "";
+            adminLoginName = "";
             localStorage.removeItem("kdm_admin_token");
+            localStorage.removeItem("kdm_admin_login");
             updateAdminStatus();
             showTab("dashboard");
+        }
+
+        async function adminChangePassword() {
+            if (!adminToken) {
+                openAdminLogin();
+                return;
+            }
+            const oldPassword = String(document.getElementById("admin-old-pass")?.value || "");
+            const newPassword = String(document.getElementById("admin-new-pass")?.value || "");
+            if (!oldPassword || !newPassword) {
+                alert("Заполни оба поля.");
+                return;
+            }
+            try {
+                const data = await apiRequest(
+                    "adminChangePassword",
+                    { token: adminToken, oldPassword, newPassword },
+                    { method: "POST" }
+                );
+                if (!data?.ok) {
+                    if (data?.message === "Unauthorized" || data?.message === "Forbidden") {
+                        adminToken = "";
+                        adminLoginName = "";
+                        localStorage.removeItem("kdm_admin_token");
+                        localStorage.removeItem("kdm_admin_login");
+                        updateAdminStatus();
+                        openAdminLogin();
+                        return;
+                    }
+                    alert(data?.message || "Не удалось сменить пароль");
+                    return;
+                }
+                alert("Пароль обновлён.");
+                document.getElementById("admin-old-pass").value = "";
+                document.getElementById("admin-new-pass").value = "";
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка при смене пароля.");
+            }
         }
 
             document.getElementById("qr-close-btn")?.addEventListener("click", closeBrowserQrScanner);
